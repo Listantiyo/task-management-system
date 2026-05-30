@@ -7,18 +7,26 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/",
+    "basePath": "/api",
     "paths": {
         "/ping": {
             "get": {
-                "description": "Menguji dengan menjalankan ping ke API",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "do the ping",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "ping"
+                    "PING"
                 ],
-                "summary": "Ping apa",
+                "summary": "ping",
                 "responses": {
                     "200": {
                         "description": "pong",
@@ -28,6 +36,288 @@
                     }
                 }
             }
+        },
+        "/user/login": {
+            "post": {
+                "description": "Autentikasi user menggunakan email dan password untuk mendapatkan JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User Login",
+                "parameters": [
+                    {
+                        "description": "Payload Login",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response-dto_LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response-any"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/register": {
+            "post": {
+                "description": "Autentikasi user menggunakan email dan password untuk mendapatkan JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User Register",
+                "parameters": [
+                    {
+                        "description": "Payload Register",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response-dto_RegisterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Response-any"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.ErrorCode": {
+            "type": "string",
+            "enum": [
+                "INVALID_INPUT",
+                "UNAUTHORIZED",
+                "INTERNAL_SERVER_ERROR",
+                "USER_NOT_FOUND",
+                "EMAIL_ALREADY_EXISTS",
+                "PASSWORD_INCORRECT",
+                "RECORD_NOT_FOUND",
+                "TOKEN_MISSING",
+                "TOKEN_INVALID",
+                "TOKEN_EXPIRED"
+            ],
+            "x-enum-comments": {
+                "ErrTokenExpired": "Jika token sudah melewati masa aktif",
+                "ErrTokenInvalid": "Jika format token rusak / signature salah",
+                "ErrTokenMissing": "Jika header Authorization kosong"
+            },
+            "x-enum-descriptions": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "Jika header Authorization kosong",
+                "Jika format token rusak / signature salah",
+                "Jika token sudah melewati masa aktif"
+            ],
+            "x-enum-varnames": [
+                "ErrInvalidInput",
+                "ErrUnauthorized",
+                "ErrInternalServer",
+                "ErrUserNotFound",
+                "ErrEmailAlreadyExits",
+                "ErrPasswordWrong",
+                "ErrRecordNotFound",
+                "ErrTokenMissing",
+                "ErrTokenInvalid",
+                "ErrTokenExpired"
+            ]
+        },
+        "dto.ErrorInfo": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "$ref": "#/definitions/dto.ErrorCode"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                }
+            }
+        },
+        "dto.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Meta": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.RegisterRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6
+                },
+                "username": {
+                    "type": "string",
+                    "minLength": 2
+                }
+            }
+        },
+        "dto.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Response-any": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "$ref": "#/definitions/dto.ErrorInfo"
+                },
+                "meta": {
+                    "$ref": "#/definitions/dto.Meta"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.Response-dto_LoginResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.LoginResponse"
+                },
+                "error": {
+                    "$ref": "#/definitions/dto.ErrorInfo"
+                },
+                "meta": {
+                    "$ref": "#/definitions/dto.Meta"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "dto.Response-dto_RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.RegisterResponse"
+                },
+                "error": {
+                    "$ref": "#/definitions/dto.ErrorInfo"
+                },
+                "meta": {
+                    "$ref": "#/definitions/dto.Meta"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Masukkan token dengan format: Bearer \u003ctoken_kamu\u003e",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }
