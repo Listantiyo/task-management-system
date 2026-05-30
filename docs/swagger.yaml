@@ -1,4 +1,142 @@
-basePath: /
+basePath: /api
+definitions:
+  dto.ErrorCode:
+    enum:
+    - INVALID_INPUT
+    - UNAUTHORIZED
+    - INTERNAL_SERVER_ERROR
+    - USER_NOT_FOUND
+    - EMAIL_ALREADY_EXISTS
+    - PASSWORD_INCORRECT
+    - RECORD_NOT_FOUND
+    - TOKEN_MISSING
+    - TOKEN_INVALID
+    - TOKEN_EXPIRED
+    type: string
+    x-enum-comments:
+      ErrTokenExpired: Jika token sudah melewati masa aktif
+      ErrTokenInvalid: Jika format token rusak / signature salah
+      ErrTokenMissing: Jika header Authorization kosong
+    x-enum-descriptions:
+    - ""
+    - ""
+    - ""
+    - ""
+    - ""
+    - ""
+    - ""
+    - Jika header Authorization kosong
+    - Jika format token rusak / signature salah
+    - Jika token sudah melewati masa aktif
+    x-enum-varnames:
+    - ErrInvalidInput
+    - ErrUnauthorized
+    - ErrInternalServer
+    - ErrUserNotFound
+    - ErrEmailAlreadyExits
+    - ErrPasswordWrong
+    - ErrRecordNotFound
+    - ErrTokenMissing
+    - ErrTokenInvalid
+    - ErrTokenExpired
+  dto.ErrorInfo:
+    properties:
+      code:
+        $ref: '#/definitions/dto.ErrorCode'
+      message:
+        type: string
+    type: object
+  dto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dto.LoginResponse:
+    properties:
+      email:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.Meta:
+    properties:
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  dto.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        minLength: 2
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  dto.RegisterResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.Response-any:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/dto.ErrorInfo'
+      meta:
+        $ref: '#/definitions/dto.Meta'
+      success:
+        type: boolean
+    type: object
+  dto.Response-dto_LoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.LoginResponse'
+      error:
+        $ref: '#/definitions/dto.ErrorInfo'
+      meta:
+        $ref: '#/definitions/dto.Meta'
+      success:
+        type: boolean
+    type: object
+  dto.Response-dto_RegisterResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.RegisterResponse'
+      error:
+        $ref: '#/definitions/dto.ErrorInfo'
+      meta:
+        $ref: '#/definitions/dto.Meta'
+      success:
+        type: boolean
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -8,7 +146,9 @@ info:
 paths:
   /ping:
     get:
-      description: Menguji dengan menjalankan ping ke API
+      consumes:
+      - application/json
+      description: do the ping
       produces:
       - application/json
       responses:
@@ -16,7 +156,69 @@ paths:
           description: pong
           schema:
             type: string
-      summary: Ping apa
+      security:
+      - BearerAuth: []
+      summary: ping
       tags:
-      - ping
+      - PING
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Autentikasi user menggunakan email dan password untuk mendapatkan
+        JWT token
+      parameters:
+      - description: Payload Login
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response-dto_LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response-any'
+      summary: User Login
+      tags:
+      - User
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Autentikasi user menggunakan email dan password untuk mendapatkan
+        JWT token
+      parameters:
+      - description: Payload Register
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Response-dto_RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.Response-any'
+      summary: User Register
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    description: 'Masukkan token dengan format: Bearer <token_kamu>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"
