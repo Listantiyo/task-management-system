@@ -62,7 +62,6 @@ func (r *userRepository) CreateUser(ctx context.Context, user *domain.User) (*do
 		Username:     userModel.Username,
 		PasswordHash: userModel.PasswordHash,
 		CreatedAt:    &userModel.CreatedAt,
-		UpdatedAt:    &userModel.UpdatedAt,
 	}
 
 	return createdUser, nil

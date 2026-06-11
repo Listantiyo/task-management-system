@@ -3,9 +3,9 @@ package middleware
 import (
 	"net/http"
 	"strings"
-	"task-management-system/internal/utils/dto"
-	"task-management-system/internal/utils/jwt"
-	"task-management-system/internal/utils/response"
+	"task-management-system/internal/delivery/dto"
+	"task-management-system/internal/pkg/jwt"
+	"task-management-system/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )

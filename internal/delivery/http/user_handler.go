@@ -2,9 +2,9 @@ package http
 
 import (
 	"net/http"
+	"task-management-system/internal/delivery/dto"
 	"task-management-system/internal/domain"
-	"task-management-system/internal/utils/dto"
-	"task-management-system/internal/utils/response"
+	"task-management-system/internal/pkg/response"
 
 	"github.com/gin-gonic/gin"
 )

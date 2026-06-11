@@ -12,12 +12,12 @@ var _ callbacks.BeforeCreateInterface = (*UserModel)(nil)
 
 // Model
 type UserModel struct {
-	ID           uuid.UUID `gorm:"type:uuid;primaryKey"`
-	Email        string    `gorm:"type:varchar(50);not null;unique"`
-	Username     string    `gorm:"type:varchar(100);not null"`
-	PasswordHash string    `gorm:"type:varchar(100);not null"`
-	CreatedAt    time.Time `gorm:"autoCreateTime"`
-	UpdatedAt    time.Time `gorm:"autoUpdateTime"`
+	ID           uuid.UUID  `gorm:"type:uuid;primaryKey"`
+	Email        string     `gorm:"type:varchar(50);not null;unique"`
+	Username     string     `gorm:"type:varchar(100);not null"`
+	PasswordHash string     `gorm:"type:varchar(100);not null"`
+	CreatedAt    time.Time  `gorm:"autoCreateTime"`
+	UpdatedAt    *time.Time `gorm:"autoUpdateTime"`
 }
 
 func (u *UserModel) TableName() string {
@@ -33,13 +33,12 @@ func (u *UserModel) BeforeCreate(tx *gorm.DB) (err error) {
 	now := time.Now().Truncate(time.Second)
 	u.ID = newUUID
 	u.CreatedAt = now
-	u.UpdatedAt = now
 	return nil
 }
 
 func (u *UserModel) BeforeUpdate(tx *gorm.DB) (err error) {
 	now := time.Now().Truncate(time.Second)
-	u.UpdatedAt = now
+	u.UpdatedAt = &now
 	tx.Statement.SetColumn("updated_at", now)
 	return nil
 }
