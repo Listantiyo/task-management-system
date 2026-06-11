@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	"errors"
+	"task-management-system/internal/delivery/dto"
 	"task-management-system/internal/domain"
-	"task-management-system/internal/utils/dto"
-	"task-management-system/internal/utils/jwt"
+	"task-management-system/internal/pkg/jwt"
 )
 
 type userUsecase struct {

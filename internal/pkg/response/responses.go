@@ -1,7 +1,7 @@
 package response
 
 import (
-	"task-management-system/internal/utils/dto"
+	"task-management-system/internal/delivery/dto"
 
 	"github.com/gin-gonic/gin"
 )

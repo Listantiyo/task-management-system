@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"task-management-system/internal/delivery/dto"
 	"task-management-system/internal/domain"
 	"task-management-system/internal/models"
-	"task-management-system/internal/utils/dto"
 
 	"gorm.io/gorm"
 )

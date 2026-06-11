@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"task-management-system/internal/utils/dto"
+	"task-management-system/internal/delivery/dto"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

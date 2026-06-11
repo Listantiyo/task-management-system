@@ -34,7 +34,6 @@ func (e ErrorCode) Error() string {
 }
 
 // Type Assertion Error
-
 func AsType[T error](err error) (T, bool) {
 	var target T
 	if errors.As(err, &target) {

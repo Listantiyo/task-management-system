@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"task-management-system/internal/utils/dto"
+	"task-management-system/internal/delivery/dto"
 )
 
 // Entity
