@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"task-management-system/internal/models"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -11,13 +12,13 @@ import (
 )
 
 func InitDB() *gorm.DB {
-	host 		:= "localhost"
-	user 		:= "postgres"
-	password 	:= "postgres"
-	dbName 		:= "task-management-system"
-	port 		:= "5432"
-	sslMode 	:= "disable"
-	timezone 	:= "Asia/Jakarta"
+	host := "localhost"
+	user := "postgres"
+	password := "postgres"
+	dbName := "task-management-system"
+	port := "5432"
+	sslMode := "disable"
+	timezone := "Asia/Jakarta"
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		host, user, password, dbName, port, sslMode, timezone,
@@ -40,4 +41,29 @@ func InitDB() *gorm.DB {
 
 	log.Println("Koneksi database PostgresSQL berhassil.")
 	return db
+}
+
+func AutoMigrate(db *gorm.DB) error {
+	err := db.Exec(`
+		DO $$
+		BEGIN
+			IF NOT EXISTS (
+				SELECT 1
+				FROM pg_type
+				WHERE typename = 'task_status'
+			) THEN
+				CREATE TYPE task_status AS ENUM (
+					'PENIDNG',
+					'IN_PROGRESS',
+					'COMPLETED'
+				);
+			END IF;
+		END $$;
+	`).Error
+
+	if err != nil {
+		return err
+	}
+
+	return db.AutoMigrate(&models.UserModel{})
 }

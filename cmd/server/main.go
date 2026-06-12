@@ -5,7 +5,6 @@ import (
 	"task-management-system/config"
 	delivery "task-management-system/internal/delivery/http"
 	customType "task-management-system/internal/delivery/types"
-	"task-management-system/internal/models"
 	"task-management-system/internal/repository"
 	"task-management-system/internal/usecase"
 
@@ -25,7 +24,7 @@ import (
 // @description                Masukkan token dengan format: Bearer <token_kamu>
 func main() {
 	db := config.InitDB()
-	db.AutoMigrate(&models.UserModel{})
+	config.AutoMigrate(db)
 
 	r := gin.Default()
 
