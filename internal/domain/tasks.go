@@ -15,18 +15,13 @@ type Task struct {
 	Descriptions string
 	Status       customType.TaskStatus
 	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
-
-// func (d *Task) ToTaskModel() *models.Task {
-// 	return &models.Task{
-// 		ID: ,
-// 	}
-// }
 
 // Repo Interface
 type TaskRepository interface {
 	Create(ctx context.Context, task *Task) (*Task, error)
-	FindByID(ctx context.Context, id uuid.UUID) (*Task, error)
+	FindByID(ctx context.Context, userID uuid.UUID, taksID uuid.UUID) (*Task, error)
 	FindAll(ctx context.Context, limit, offset int64) ([]Task, int, error)
 	Update(ctx context.Context, id uuid.UUID, task *Task) error
 	Delete(ctx context.Context, id uuid.UUID) error
