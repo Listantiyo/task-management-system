@@ -36,4 +36,15 @@ func (r *taskRepo) FindByID(ctx context.Context, userID uuid.UUID, taskID uuid.U
 }
 func (r *taskRepo) FindAll(ctx context.Context, limit, offset int64) ([]domain.Task, int, error)
 func (r *taskRepo) Update(ctx context.Context, id uuid.UUID, task *domain.Task) error
-func (r *taskRepo) Delete(ctx context.Context, id uuid.UUID) error
+func (r *taskRepo) Delete(ctx context.Context, userID uuid.UUID, taskID uuid.UUID) error {
+	rowAffected, err := gorm.G[models.TaskModel](r.db).Where("id = ? AND user_id = ?", taskID, userID).Delete(ctx)
+	if err != nil {
+		return err
+	}
+
+	if rowAffected == 0 {
+		return errors.New("No data deleted")
+	}
+
+	return nil
+}

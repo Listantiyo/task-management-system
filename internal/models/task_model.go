@@ -2,6 +2,7 @@ package models
 
 import (
 	customType "task-management-system/internal/delivery/types"
+	"task-management-system/internal/domain"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,4 +21,16 @@ type TaskModel struct {
 
 func (TaskModel) TableName() string {
 	return "tasks"
+}
+
+func (m *TaskModel) ToDomain() domain.Task {
+	return domain.Task{
+		ID:           m.ID,
+		UserID:       m.UserID,
+		Title:        m.Title,
+		Descriptions: m.Description,
+		Status:       m.Status,
+		CreatedAt:    m.CreatedAt,
+		UpdatedAt:    m.UpdatedAt,
+	}
 }

@@ -24,7 +24,7 @@ type TaskRepository interface {
 	FindByID(ctx context.Context, userID uuid.UUID, taksID uuid.UUID) (*Task, error)
 	FindAll(ctx context.Context, limit, offset int64) ([]Task, int, error)
 	Update(ctx context.Context, id uuid.UUID, task *Task) error
-	Delete(ctx context.Context, id uuid.UUID) error
+	Delete(ctx context.Context, userID uuid.UUID, taskID uuid.UUID) error
 }
 
 // Usecase Interface
