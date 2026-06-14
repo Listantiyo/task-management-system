@@ -2,6 +2,7 @@ package response
 
 import (
 	"task-management-system/internal/delivery/dto"
+	apperr "task-management-system/internal/delivery/error"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,7 @@ func Succes[T any](g *gin.Context, statusCode int, data T, meta *dto.Meta) {
 	})
 }
 
-func Failed(g *gin.Context, statusCode int, errCode dto.ErrorCode, errMessage string) {
+func Failed(g *gin.Context, statusCode int, errCode apperr.ErrorCode, errMessage string) {
 	g.JSON(statusCode, dto.Response[any]{
 		Success: false,
 		Error: &dto.ErrorInfo{
@@ -24,7 +25,7 @@ func Failed(g *gin.Context, statusCode int, errCode dto.ErrorCode, errMessage st
 	})
 }
 
-func AbortFailed(g *gin.Context, statusCode int, errCode dto.ErrorCode, errMessage string) {
+func AbortFailed(g *gin.Context, statusCode int, errCode apperr.ErrorCode, errMessage string) {
 	g.AbortWithStatusJSON(statusCode, dto.Response[any]{
 		Success: false,
 		Error: &dto.ErrorInfo{

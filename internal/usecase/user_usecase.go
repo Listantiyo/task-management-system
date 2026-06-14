@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"task-management-system/internal/delivery/dto"
+	apperr "task-management-system/internal/delivery/error"
 	"task-management-system/internal/domain"
 	"task-management-system/internal/pkg/jwt"
 )
@@ -22,7 +22,7 @@ func (u *userUsecase) Login(ctx context.Context, reqLogin dto.LoginRequest) (*dt
 		return nil, err
 	}
 	if !user.ValidatePassword(reqLogin.Password) {
-		return nil, dto.ErrPasswordWrong
+		return nil, apperr.New(apperr.ErrPasswordWrong, "invalid password")
 	}
 
 	tokenString, err := jwt.GenerateJWT(user)
@@ -41,8 +41,7 @@ func (u *userUsecase) Login(ctx context.Context, reqLogin dto.LoginRequest) (*dt
 }
 
 func (u *userUsecase) Register(ctx context.Context, reqRegister dto.RegisterRequest) (*dto.RegisterResponse, error) {
-	_, err := u.repo.GetUserByEmail(ctx, reqRegister.Email)
-	if err != nil && !errors.Is(err, dto.ErrUserNotFound) {
+	if _, err := u.repo.GetUserByEmail(ctx, reqRegister.Email); err != nil {
 		return nil, err
 	}
 

@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
-	"task-management-system/internal/delivery/dto"
+	apperr "task-management-system/internal/delivery/error"
 	"task-management-system/internal/domain"
 	"task-management-system/internal/models"
 
@@ -24,10 +25,10 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 	err := r.db.WithContext(ctx).Where("email = ?", email).First(&userModel).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, dto.ErrUserNotFound
+			return nil, apperr.New(apperr.ErrRecordNotFound, fmt.Sprintf("user with email `%s` not found", email))
 		}
 		slog.Error("error get account by email", "error", err)
-		return nil, err
+		return nil, apperr.New(apperr.ErrInternalServer, "failed to get user")
 	}
 
 	user := &domain.User{
@@ -50,7 +51,7 @@ func (r *userRepository) CreateUser(ctx context.Context, user *domain.User) (*do
 	err := r.db.WithContext(ctx).Create(&userModel).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			return nil, dto.ErrEmailAlreadyExits
+			return nil, apperr.New(apperr.ErrEmailAlreadyExits, "invalid duplicate email")
 		}
 		slog.Error("error create user", "error", err)
 		return nil, err

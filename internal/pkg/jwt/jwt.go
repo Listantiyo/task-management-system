@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"task-management-system/internal/delivery/dto"
+	apperr "task-management-system/internal/delivery/error"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -55,7 +55,7 @@ func ValidateJWT(tokenStr string) (*CustomClaim, error) {
 	var claims CustomClaim
 	token, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, dto.ErrTokenInvalid
+			return nil, apperr.New(apperr.ErrTokenInvalid, "invalid token signing method")
 		}
 
 		return []byte(secret), nil
@@ -66,7 +66,7 @@ func ValidateJWT(tokenStr string) (*CustomClaim, error) {
 	}
 
 	if !token.Valid {
-		return nil, dto.ErrTokenInvalid
+		return nil, apperr.New(apperr.ErrTokenInvalid, "invalid token")
 	}
 
 	return &claims, nil
