@@ -50,10 +50,10 @@ func AutoMigrate(db *gorm.DB) error {
 			IF NOT EXISTS (
 				SELECT 1
 				FROM pg_type
-				WHERE typename = 'task_status'
+				WHERE typname = 'task_status'
 			) THEN
 				CREATE TYPE task_status AS ENUM (
-					'PENIDNG',
+					'PENDING',
 					'IN_PROGRESS',
 					'COMPLETED'
 				);
@@ -65,5 +65,5 @@ func AutoMigrate(db *gorm.DB) error {
 		return err
 	}
 
-	return db.AutoMigrate(&models.UserModel{})
+	return db.AutoMigrate(&models.UserModel{}, &models.TaskModel{})
 }
