@@ -59,7 +59,7 @@ func (u *userUsecase) Register(ctx context.Context, reqRegister dto.RegisterRequ
 		ID:        userCreated.ID,
 		Email:     userCreated.Email,
 		Username:  userCreated.Username,
-		CreatedAt: *userCreated.CreatedAt,
+		CreatedAt: userCreated.CreatedAt,
 	}
 	return result, nil
 }

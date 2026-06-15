@@ -16,8 +16,8 @@ type User struct {
 	Email        string
 	Username     string
 	PasswordHash string
-	CreatedAt    *time.Time
-	UpdatedAt    *time.Time
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 func (u *User) GetID() string       { return u.ID.String() }

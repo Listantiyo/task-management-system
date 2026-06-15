@@ -9,12 +9,12 @@ import (
 )
 
 type TaskModel struct {
-	ID          uuid.UUID             `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	UserID      uuid.UUID             `gorm:"type:uuid;not null;index"`
+	ID          uuid.UUID             `gorm:"type:uuid;default:gen_random_uuid();primaryKey;<-:create"`
+	UserID      uuid.UUID             `gorm:"type:uuid;not null;index;<-:create"`
 	Title       string                `gorm:"type:varchar(100);not null"`
 	Description *string               `gorm:"type:text"`
-	Status      customType.TaskStatus `gorm:"type:task_status;default:'PENDING'; not null"`
-	CreatedAt   time.Time             `gorm:"type:timestamptz;default:CURRENT_TIMESTAMP;autoCreateTime;<-:create"`
+	Status      customType.TaskStatus `gorm:"type:task_status;default:'PENDING';not null"`
+	CreatedAt   time.Time             `gorm:"type:timestamptz;default:CURRENT_TIMESTAMP;<-:create"`
 	UpdatedAt   time.Time             `gorm:"type:timestamptz;autoUpdateTime"`
 	User        UserModel             `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE"`
 }

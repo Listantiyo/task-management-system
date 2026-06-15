@@ -21,8 +21,7 @@ func NewUserRepository(db *gorm.DB) domain.UserRepository {
 }
 
 func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
-	var userModel models.UserModel
-	err := r.db.WithContext(ctx).Where("email = ?", email).First(&userModel).Error
+	user, err := gorm.G[models.UserModel](r.db).Where("email = ?", email).First(ctx)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, apperr.New(apperr.ErrRecordNotFound, fmt.Sprintf("user with email `%s` not found", email))
@@ -31,24 +30,13 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*dom
 		return nil, apperr.New(apperr.ErrInternalServer, "failed to get user")
 	}
 
-	user := &domain.User{
-		ID:           userModel.ID,
-		Email:        userModel.Email,
-		Username:     userModel.Username,
-		PasswordHash: userModel.PasswordHash,
-		CreatedAt:    &userModel.CreatedAt,
-		UpdatedAt:    &userModel.UpdatedAt,
-	}
-	return user, nil
+	domainUser := user.ToDomain()
+	return &domainUser, nil
 }
 
 func (r *userRepository) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
-	userModel := models.UserModel{
-		Email:        user.Email,
-		Username:     user.Username,
-		PasswordHash: user.PasswordHash,
-	}
-	err := r.db.WithContext(ctx).Create(&userModel).Error
+	userModel := models.ToNewUserModel(user)
+	err := gorm.G[models.UserModel](r.db).Create(ctx, &userModel)
 	if err != nil {
 		if errors.Is(err, gorm.ErrDuplicatedKey) {
 			return nil, apperr.New(apperr.ErrEmailAlreadyExits, "invalid duplicate email")
@@ -57,24 +45,19 @@ func (r *userRepository) CreateUser(ctx context.Context, user *domain.User) (*do
 		return nil, err
 	}
 
-	createdUser := &domain.User{
-		ID:           userModel.ID,
-		Email:        userModel.Email,
-		Username:     userModel.Username,
-		PasswordHash: userModel.PasswordHash,
-		CreatedAt:    &userModel.CreatedAt,
-	}
-
-	return createdUser, nil
+	domainUser := userModel.ToDomain()
+	return &domainUser, nil
 }
 
 func (r *userRepository) UpdateUser(ctx context.Context, user *domain.User) error {
-	updateData := map[string]any{
-		"email":    user.Email,
-		"username": user.Username,
+	modelUser := models.ToNewUserModel(user)
+	rowAffected, err := gorm.G[models.UserModel](r.db).Updates(ctx, modelUser)
+	if err != nil {
+		return apperr.New(apperr.ErrInternalServer, "failed to update user")
 	}
-	if err := r.db.WithContext(ctx).Model(&models.UserModel{ID: user.ID}).Updates(&updateData).Error; err != nil {
-		return err
+
+	if rowAffected == 0 {
+		return apperr.New(apperr.ErrNoRecordAffected, "not user updated")
 	}
 	return nil
 }
